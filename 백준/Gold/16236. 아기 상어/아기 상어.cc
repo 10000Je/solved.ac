@@ -19,7 +19,6 @@ struct {
 } shark;
 
 bool bfs();
-bool find(vector<vector<int>>& dist);
 
 int main() {
     scanf("%d", &n);
@@ -48,13 +47,15 @@ int main() {
 bool bfs() {
     vector<vector<int>> dist(n, vector<int>(n, INF));
     queue<pair<int, int>> que;
+    int min = INF;
+    pair<int, int> loc;
     dist[shark.r][shark.c] = 0;
     que.push(make_pair(shark.r, shark.c));
     while(!que.empty()) {
         int r = que.front().first, c = que.front().second;
         que.pop();
         vector<pair<int, int>> nodes = {
-            make_pair(r-1, c), make_pair(r+1, c), make_pair(r, c-1), make_pair(r, c+1)
+            make_pair(r-1, c), make_pair(r, c-1), make_pair(r, c+1), make_pair(r+1, c)
         };
         for(pair<int, int> node : nodes) {
             int i = node.first, j = node.second;
@@ -68,28 +69,17 @@ bool bfs() {
                 continue;
             }
             dist[i][j] = dist[r][c] + 1;
-            que.push(make_pair(i, j));
-        }
-    }
-    return find(dist);
-}
-
-bool find(vector<vector<int>>& dist) {
-    int min = INF;
-    int r = n, c = n;
-    for(int i=0; i<n; i++) {
-        for(int j=0; j<n; j++) {
-            if(0 < space[i][j] && space[i][j] < shark.size) {
-                if(dist[i][j] < min) {
-                    min = dist[i][j];
-                    r = i;
-                    c = j;
-                }
-                else if(dist[i][j] == min) {
-                    if(i < r || (i==r && j<c)) {
-                        r = i;
-                        c = j;
-                    }
+            if(space[i][j] == 0 || space[i][j] == shark.size) {
+                que.push(make_pair(i, j));
+            }
+            else if(min == INF) {
+                min = dist[i][j];
+                loc = make_pair(i, j);
+            }
+            else if(dist[i][j] == min) {
+                pair<int, int> pr = make_pair(i, j);
+                if(pr < loc) {
+                    loc = pr;
                 }
             }
         }
@@ -98,15 +88,15 @@ bool find(vector<vector<int>>& dist) {
         return false;
     }
     else {
-        space[r][c] = 0;
-        shark.r = r;
-        shark.c = c;
+        shark.r = loc.first;
+        shark.c = loc.second;
         shark.guage++;
         if(shark.guage == shark.size) {
             shark.guage = 0;
             shark.size++;
         }
-        total += min;
+        space[loc.first][loc.second] = 0;
+        total += dist[loc.first][loc.second];
         return true;
     }
 }
