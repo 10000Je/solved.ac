@@ -2,10 +2,10 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 void insert(int val, vector<int>& lis);
-int binary_search(int val, int left, int right, const vector<int>& lis);
 
 int main()
 {
@@ -31,21 +31,9 @@ void insert(int val, vector<int>& lis)
         lis.push_back(val);
         return;
     }
-    int idx = binary_search(val, 0, lis.size()-1, lis);
+    int idx = distance(lis.begin(), lower_bound(lis.begin(), lis.end(), val));
     if(idx >= lis.size())
         lis.push_back(val);
     else
         lis[idx] = val;
 }
-
-int binary_search(int val, int left, int right, const vector<int>& lis)
-{
-    if(left > right)
-        return left;
-    int mid = (left + right) / 2;
-    if(val <= lis[mid])
-        return binary_search(val, left, mid-1, lis);
-    else
-        return binary_search(val, mid+1, right, lis);
-}
-
