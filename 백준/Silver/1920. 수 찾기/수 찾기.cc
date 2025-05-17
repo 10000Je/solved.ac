@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#define SIZE 170003 // prime number
+#define SIZE 139999 // prime number
 #define TRUE 1
 #define FALSE 0
 
@@ -22,12 +22,14 @@ int check(HashTable* hashTable, int val);
 
 int main()
 {
-    int* data = (int*)malloc(sizeof(int)*SIZE);
-    int* valid = (int*)malloc(sizeof(int)*SIZE);
+    int* data = (int*)malloc(4*SIZE);
+    int* valid = (int*)malloc(4*SIZE);
     for(int i=0; i<SIZE; i++)
+    {
         valid[i] = FALSE;
+        data[i] = 0;
+    }
     HashTable hashTable = {data, valid};
-
     int n;
     scanf("%d", &n);
     for(int i=0; i<n; i++)
@@ -36,7 +38,6 @@ int main()
         scanf("%d", &val);
         insert(&hashTable, val);
     }
-
     int m;
     scanf("%d", &m);
     for(int i=0; i<m; i++)
@@ -48,36 +49,31 @@ int main()
     return 0;
 }
 
-int hash1(int val)
+int hash(int val)
 {
-    return abs(val) % SIZE;
-}
-
-int hash2(int val)
-{
-    return 1;
+    return abs(val % SIZE);
 }
 
 void insert(HashTable* hashTable, int val)
 {
     if(check(hashTable, val))
         return;
-    int i = hash1(val);
+    int i = hash(val);
     while(hashTable->valid[i] == TRUE)
-        i = (i + hash2(val)) % SIZE;
+        i = (i + 1) % SIZE;
     hashTable->data[i] = val;
     hashTable->valid[i] = TRUE;
 }
 
 int check(HashTable* hashTable, int val)
 {
-    int i = hash1(val);
+    int i = hash(val);
     while(hashTable->valid[i] == TRUE)
     {
         if(hashTable->data[i] == val)
             return TRUE;
         else
-            i = (i + hash2(val)) % SIZE;
+            i = (i + 1) % SIZE;
     }
     return FALSE;
 }
