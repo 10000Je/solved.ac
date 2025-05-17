@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#define SIZE 170003 // prime number
+#define SIZE 139999 // prime number
 #define TRUE 1
 #define FALSE 0
 
@@ -25,7 +25,10 @@ int main()
     int* data = (int*)malloc(sizeof(int)*SIZE);
     int* valid = (int*)malloc(sizeof(int)*SIZE);
     for(int i=0; i<SIZE; i++)
+    {
         valid[i] = FALSE;
+        data[i] = 0;
+    }
     HashTable hashTable = {data, valid};
     int n;
     scanf("%d", &n);
@@ -48,7 +51,7 @@ int main()
 
 int hash(int val)
 {
-    return abs(val) % SIZE;
+    return abs(val % SIZE);
 }
 
 void insert(HashTable* hashTable, int val)
