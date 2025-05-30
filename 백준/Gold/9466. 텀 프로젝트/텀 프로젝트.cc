@@ -1,53 +1,55 @@
-// no.9466: 텀 프로젝트
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-#include <iostream>
-#include <vector>
-#include <queue>
-using namespace std;
+#define MAX 100001
 
-void topology_sort(const vector<vector<int>>& graph, vector<int>& inorder);
+int graph[MAX];         // 각 학생이 선택한 학생
+bool visited[MAX];      // 방문 여부
+bool finished[MAX];     // DFS가 끝났는지 여부
+int count;              // 사이클에 포함된 학생 수
 
-int main() {
-    cin.tie(NULL);
-    ios_base::sync_with_stdio(false);
-    int t;
-    cin >> t;
-    for(int i=0; i<t; i++) {
-        int n;
-        cin >> n;
-        vector<int> inorder(n+1, 0);
-        vector<vector<int>> graph(n+1, vector<int>());
-        for(int i=1; i<=n; i++) {
-            int j;
-            cin >> j;
-            graph[i].push_back(j);
-            inorder[j]++;
+void dfs(int node) {
+    visited[node] = true;
+    int next = graph[node];
+
+    if (!visited[next]) {
+        dfs(next);
+    } else if (!finished[next]) {
+        // 사이클 발견
+        for (int i = next; i != node; i = graph[i]) {
+            count++;
         }
-        topology_sort(graph, inorder);
-        int count = 0;
-        for(int i=1; i<=n; i++) {
-            if(inorder[i] == 0) {
-                count++;
-            }
-        }
-        cout << count << '\n';
+        count++; // 현재 노드도 포함
     }
-    return 0;
+
+    finished[node] = true;
 }
 
-void topology_sort(const vector<vector<int>>& graph, vector<int>& inorder) {
-    int n = inorder.size() - 1;
-    queue<int> que;
-    for(int i=1; i<=n; i++) {
-        if(inorder[i] == 0)
-            que.push(i);
-    }
-    while(!que.empty()) {
-        int x = que.front(); que.pop();
-        for(int node : graph[x]) {
-            inorder[node]--;
-            if(inorder[node] == 0)
-                que.push(node);
+int main() {
+    int T;
+    scanf("%d", &T);
+
+    while (T--) {
+        int n;
+        scanf("%d", &n);
+
+        for (int i = 1; i <= n; i++) {
+            scanf("%d", &graph[i]);
+            visited[i] = false;
+            finished[i] = false;
         }
+
+        count = 0;
+
+        for (int i = 1; i <= n; i++) {
+            if (!visited[i]) {
+                dfs(i);
+            }
+        }
+
+        printf("%d\n", n - count);
     }
+
+    return 0;
 }
